@@ -5,6 +5,7 @@ import 'application_status_screen.dart';
 import 'my_profile_screen.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../models/user.dart'; // Import the UserState
+import '../services/auth_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -19,6 +20,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
   late TextEditingController _phoneNumberController;
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -76,19 +80,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  void _saveChanges() {
-    // Update the user data in UserState
-    UserState().updateUser(
-      firstName: _firstNameController.text,
-      lastName: _lastNameController.text,
-      email: _emailController.text,
-      phoneNumber: _phoneNumberController.text,
-    );
-    // Navigate back to MyProfileScreen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MyProfileScreen()),
-    );
+  Future<void> _saveChanges() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final user = UserState().currentUser;
+      await _authService.updateUserDetails(
+        id: user.id,
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
+        phoneNumber: _phoneNumberController.text,
+      );
+
+      // Update the user data in UserState
+      UserState().updateUser(
+        id: user.id,
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text,
+        email: user.email, // Keep the existing email
+        phoneNumber: _phoneNumberController.text,
+      );
+
+      if (mounted) {
+        // Navigate back to MyProfileScreen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MyProfileScreen()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = e.toString();
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -154,6 +184,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
+                if (_errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: Text(
+                      _errorMessage!,
+                      style: const TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 TextField(
                   controller: _firstNameController,
                   decoration: const InputDecoration(
@@ -172,6 +211,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _emailController,
+                  enabled: false, // Email cannot be changed
                   decoration: const InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined),
@@ -186,10 +226,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed:
-                      _saveChanges, // Call _saveChanges to update user data
-                  child: const Text('Save Changes'),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _saveChanges,
+                    child:
+                        _isLoading
+                            ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            )
+                            : const Text('Save Changes'),
+                  ),
                 ),
               ],
             ),

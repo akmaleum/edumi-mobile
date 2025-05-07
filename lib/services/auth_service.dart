@@ -59,4 +59,53 @@ class AuthService {
       throw Exception('Failed to connect to server: $e');
     }
   }
+
+  Future<Map<String, dynamic>> getUserDetails(int userId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/get_user_details.php?id=$userId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception(
+          jsonDecode(response.body)['error'] ?? 'Failed to fetch user details',
+        );
+      }
+    } catch (e) {
+      throw Exception('Failed to connect to server: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateUserDetails({
+    required int id,
+    required String firstName,
+    required String lastName,
+    required String phoneNumber,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/update_user_details.php'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'id': id,
+          'first_name': firstName,
+          'last_name': lastName,
+          'phone_number': phoneNumber,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception(
+          jsonDecode(response.body)['error'] ?? 'Failed to update user details',
+        );
+      }
+    } catch (e) {
+      throw Exception('Failed to connect to server: $e');
+    }
+  }
 }
