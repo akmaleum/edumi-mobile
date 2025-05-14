@@ -31,7 +31,7 @@ class _SignInScreenState extends State<SignInScreen> {
     });
 
     try {
-      final response = await _authService.signIn(
+      await _authService.signIn(
         usernameController.text,
         passwordController.text,
       );

@@ -34,7 +34,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     });
 
     try {
-      final response = await _authService.signUp(
+      await _authService.signUp(
         username: _usernameController.text,
         password: _passwordController.text,
         firstName: _firstNameController.text,

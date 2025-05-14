@@ -47,7 +47,8 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = e.toString();
+          _errorMessage =
+              'Failed to load profile. Please check your connection or try again later.';
           _isLoading = false;
         });
       }

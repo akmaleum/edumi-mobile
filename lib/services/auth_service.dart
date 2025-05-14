@@ -68,14 +68,29 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        try {
+          return jsonDecode(response.body);
+        } catch (_) {
+          throw Exception(
+            'Unexpected server response. Please try again later.',
+          );
+        }
       } else {
-        throw Exception(
-          jsonDecode(response.body)['error'] ?? 'Failed to fetch user details',
-        );
+        try {
+          throw Exception(
+            jsonDecode(response.body)['error'] ??
+                'Failed to fetch user details',
+          );
+        } catch (_) {
+          throw Exception(
+            'Failed to fetch user details. Please try again later.',
+          );
+        }
       }
     } catch (e) {
-      throw Exception('Failed to connect to server: $e');
+      throw Exception(
+        'Failed to connect to server. Please check your connection and try again.',
+      );
     }
   }
 
