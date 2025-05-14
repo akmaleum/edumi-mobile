@@ -17,7 +17,7 @@ if (!isset($_GET['id'])) {
 
 $user_id = mysqli_real_escape_string($conn, $_GET['id']);
 
-$sql = "SELECT id, username, first_name, last_name, email, phone_number, date_joined 
+$sql = "SELECT id, username, first_name, last_name, email, date_joined 
         FROM auth_user 
         WHERE id = '$user_id' AND is_active = 1";
 

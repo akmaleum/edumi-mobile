@@ -38,7 +38,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
           firstName: response['first_name'],
           lastName: response['last_name'],
           email: response['email'],
-          phoneNumber: response['phone_number'] ?? '',
         );
         setState(() {
           _isLoading = false;
