@@ -7,9 +7,14 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
-ob_start();
-
 include 'config.php';
+
+// Check DB connection
+if (!isset($conn) || !$conn) {
+    http_response_code(500);
+    echo json_encode(["error" => "Database connection failed"]);
+    exit();
+}
 
 $data = json_decode(file_get_contents("php://input"), true);
 
@@ -24,6 +29,15 @@ $first_name = mysqli_real_escape_string($conn, $data['first_name'] ?? '');
 $last_name = mysqli_real_escape_string($conn, $data['last_name'] ?? '');
 $phone_number = mysqli_real_escape_string($conn, $data['phone_number'] ?? '');
 
+// If you want to allow email update, uncomment below:
+// $email = mysqli_real_escape_string($conn, $data['email'] ?? '');
+// $sql = "UPDATE auth_user 
+//         SET first_name = '$first_name',
+//             last_name = '$last_name',
+//             phone_number = '$phone_number',
+//             email = '$email'
+//         WHERE id = '$user_id' AND is_active = 1";
+
 $sql = "UPDATE auth_user 
         SET first_name = '$first_name',
             last_name = '$last_name',
@@ -31,11 +45,9 @@ $sql = "UPDATE auth_user
         WHERE id = '$user_id' AND is_active = 1";
 
 if (mysqli_query($conn, $sql)) {
-    ob_end_clean();
     echo json_encode(["message" => "User details updated successfully"]);
 } else {
     http_response_code(500);
-    ob_end_clean();
     echo json_encode(["error" => "Failed to update user details"]);
 }
 

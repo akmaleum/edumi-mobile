@@ -211,7 +211,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: _emailController,
-                  enabled: false, // Email cannot be changed
+                  enabled: true, // Email can be changed
                   decoration: const InputDecoration(
                     labelText: 'Email',
                     prefixIcon: Icon(Icons.email_outlined),
