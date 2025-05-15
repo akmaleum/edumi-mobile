@@ -18,7 +18,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
   final AuthService _authService = AuthService();
   bool _isLoading = false;
   String? _errorMessage;
@@ -40,7 +39,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
         firstName: _firstNameController.text,
         lastName: _lastNameController.text,
         email: _emailController.text,
-        phoneNumber: _phoneNumberController.text,
       );
 
       if (mounted) {
@@ -70,7 +68,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    _phoneNumberController.dispose();
     super.dispose();
   }
 
@@ -155,25 +152,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       }
                       if (!value.contains('@') || !value.contains('.')) {
                         return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _phoneNumberController,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone Number',
-                      prefixIcon: Icon(Icons.phone_outlined),
-                    ),
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your phone number';
-                      }
-                      // Basic phone number validation (you can customize this)
-                      if (value.length < 10) {
-                        return 'Please enter a valid phone number';
                       }
                       return null;
                     },
@@ -267,9 +245,25 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                               : () {
                                 Navigator.pop(context);
                               },
-                      child: const Text(
-                        'Already have an account? Sign In',
-                        style: TextStyle(color: Color(0xFF1F2937)),
+                      child: RichText(
+                        text: const TextSpan(
+                          text: 'Already have an account? ',
+                          style: TextStyle(
+                            color: Color(0xFF1F2937),
+                            fontSize: 16,
+                            fontFamily: 'Poppins',
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Sign In',
+                              style: TextStyle(
+                                color: Color(0xFF3B82F6),
+                                fontSize: 16,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
