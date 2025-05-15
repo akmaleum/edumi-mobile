@@ -13,10 +13,10 @@ include 'config.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-if (!isset($data['username']) || !isset($data['password']) || !isset($data['first_name']) || !isset($data['last_name']) || !isset($data['email']) || !isset($data['phone_number'])) {
+if (!isset($data['username']) || !isset($data['password']) || !isset($data['first_name']) || !isset($data['last_name']) || !isset($data['email'])) {
     http_response_code(400);
     ob_end_clean();
-    echo json_encode(["error" => "All fields are required"]);
+    echo json_encode(["error" => "Required fields are missing"]);
     exit();
 }
 
@@ -25,7 +25,7 @@ $password = $data['password']; // Plain text for now (hash in production)
 $first_name = mysqli_real_escape_string($conn, $data['first_name']);
 $last_name = mysqli_real_escape_string($conn, $data['last_name']);
 $email = mysqli_real_escape_string($conn, $data['email']);
-$phone_number = mysqli_real_escape_string($conn, $data['phone_number']);
+$phone_number = ''; // Default empty phone number
 
 // Check for duplicate username or email
 $check_sql = "SELECT id FROM auth_user WHERE username = '$username' OR email = '$email'";
